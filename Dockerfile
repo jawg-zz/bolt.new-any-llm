@@ -10,3 +10,6 @@ COPY package.json pnpm-lock.yaml* ./
 
 # Expose Vite's default port
 EXPOSE 5173
+
+# Set host for Vite
+ENV VITE_HOST=0.0.0.0
