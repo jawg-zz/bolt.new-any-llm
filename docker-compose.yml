@@ -18,12 +18,7 @@ services:
     volumes:
       - "bolt_app:/app"
       - "bolt_node_modules:/app/node_modules"
-    command: sh -c "pnpm install && remix vite:dev"
-    healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:5173"]
-    interval: 30s
-    timeout: 10s
-    retries: 3
+    command: sh -c "pnpm install && remix vite:dev"    
   deploy:
     resources:
       limits:
