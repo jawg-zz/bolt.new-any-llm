@@ -18,10 +18,4 @@ services:
     volumes:
       - "bolt_app:/app"
       - "bolt_node_modules:/app/node_modules"
-    command: sh -c "pnpm install && remix vite:dev"    
-  deploy:
-    resources:
-      limits:
-        memory: 2G
-      reservations:
-        memory: 512M
+    command: sh -c "pnpm install && remix vite:dev" 
