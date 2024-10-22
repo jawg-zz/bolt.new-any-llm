@@ -4,17 +4,14 @@ FROM node:18
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy package.json and pnpm-lock.yaml to install dependencies
-COPY package.json pnpm-lock.yaml ./
+# Copy the rest of the application code
+COPY . .
 
 # Install pnpm globally
 RUN npm install -g pnpm
 
 # Install app dependencies
 RUN pnpm install
-
-# Copy the rest of the application code
-COPY . .
 
 # Expose the port your app runs on (adjust if needed)
 EXPOSE 3000
