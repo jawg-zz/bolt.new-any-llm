@@ -13,11 +13,7 @@ services:
       - GROQ_API_KEY
       - OPENAI_API_KEY
       - ANTHROPIC_API_KEY
-      - VITE_LOG_LEVEL
-    
-    labels:
-      coolify.managed: "true"
-    
+      - VITE_LOG_LEVEL    
     deploy:
       resources:
         limits:
