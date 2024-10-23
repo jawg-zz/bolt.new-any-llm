@@ -7,7 +7,11 @@ services:
       dockerfile: Dockerfile
       target: runner
       platforms:
+        - "linux/amd64"
         - "linux/arm64"
+    
+    # Use platform-specific image based on host architecture
+    image: ${COOLIFY_APP_NAME:-remix-app}:${PLATFORM:-latest}
     
     container_name: ${COOLIFY_APP_NAME:-remix-app}
     
@@ -16,10 +20,6 @@ services:
       - OPENAI_API_KEY
       - ANTHROPIC_API_KEY
       - VITE_LOG_LEVEL
-    
-    labels:
-      coolify.managed: "true"
-    
     deploy:
       resources:
         limits:
