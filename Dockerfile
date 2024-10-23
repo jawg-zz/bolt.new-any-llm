@@ -1,14 +1,30 @@
-FROM node:20.15.1-alpine as builder
+FROM --platform=linux/arm64 node:20.15.1-alpine as builder
 
 # Install system dependencies and pnpm in one layer
-RUN apk add --no-cache libc6-compat python3 make g++ && \
+RUN apk add --no-cache \
+    libc6-compat \
+    python3 \
+    make \
+    g++ \
+    git && \
     npm install -g pnpm@9.4.0
 
 WORKDIR /app
 
 # Install ALL dependencies (including devDependencies)
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+
+# Install dependencies with specific platform configuration for workerd
+RUN PNPM_PACKAGE_EXTENSIONS=$(cat << 'EOF'
+{
+  "@cloudflare/workerd-linux-arm64@*": {
+    "dependencies": {
+      "@cloudflare/workerd-linux-64": "*"
+    }
+  }
+}
+EOF
+) pnpm install --frozen-lockfile
 
 # Copy all source files
 COPY . .
@@ -17,7 +33,7 @@ COPY . .
 RUN pnpm run build
 
 # Production stage
-FROM node:20.15.1-alpine as runner
+FROM --platform=linux/arm64 node:20.15.1-alpine as runner
 
 # Install production essentials in one layer
 RUN apk add --no-cache libc6-compat && \
@@ -33,8 +49,17 @@ COPY --from=builder /app/pnpm-lock.yaml ./
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/public ./public
 
-# Install only production dependencies
-RUN pnpm install --frozen-lockfile --prod && \
+# Install production dependencies with the same platform configuration
+RUN PNPM_PACKAGE_EXTENSIONS=$(cat << 'EOF'
+{
+  "@cloudflare/workerd-linux-arm64@*": {
+    "dependencies": {
+      "@cloudflare/workerd-linux-64": "*"
+    }
+  }
+}
+EOF
+) pnpm install --frozen-lockfile --prod && \
     chown -R remixjs:nodejs /app
 
 USER remixjs

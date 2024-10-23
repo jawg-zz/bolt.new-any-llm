@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: runner
+      platforms:
+        - "linux/arm64"
     
     container_name: ${COOLIFY_APP_NAME:-remix-app}
     
@@ -14,6 +16,9 @@ services:
       - OPENAI_API_KEY
       - ANTHROPIC_API_KEY
       - VITE_LOG_LEVEL
+    
+    labels:
+      coolify.managed: "true"
     
     deploy:
       resources:
