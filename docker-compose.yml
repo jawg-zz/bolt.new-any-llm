@@ -11,7 +11,7 @@ services:
     ports:
       - "5173:5173"  # Default Vite dev server port
     volumes:
-      - /bolt_app:/app
+      - /bolt_app:/app/bolt
       - /bolt_node_modules:/app/node_modules
     environment:
       - NODE_ENV=development
