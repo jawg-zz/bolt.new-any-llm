@@ -1,20 +1,15 @@
-# Use the official Node.js 18 image as the base
 FROM node:18
 
-# Set the working directory inside the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy the rest of the application code
-COPY . .
+# Install pnpm and Remix CLI globally
+RUN npm install -g pnpm @remix-run/dev
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Only copy package files initially for better caching
+COPY package.json pnpm-lock.yaml* ./
 
-# Install app dependencies
-RUN pnpm install
+# Expose Vite's default port
+EXPOSE 5173
 
-# Expose the port your app runs on (adjust if needed)
-EXPOSE 3000
-
-# Command to start your application
-CMD ["pnpm", "start"]
+# Set host for Vite
+ENV VITE_HOST=0.0.0.0
