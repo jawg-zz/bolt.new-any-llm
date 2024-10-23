@@ -1,17 +1,19 @@
 FROM node:20.15.1-alpine as builder
 
 # Install system dependencies and pnpm in one layer
-RUN apk add --no-cache libc6-compat && \
+RUN apk add --no-cache libc6-compat python3 make g++ && \
     npm install -g pnpm@9.4.0
 
 WORKDIR /app
 
-# Install dependencies
+# Install ALL dependencies (including devDependencies)
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --production=false
+RUN pnpm install --frozen-lockfile
+
+# Copy all source files
+COPY . .
 
 # Build application
-COPY . .
 RUN pnpm run build
 
 # Production stage
@@ -25,14 +27,14 @@ RUN apk add --no-cache libc6-compat && \
 
 WORKDIR /app
 
-# Copy only necessary files
+# Copy production files and dependencies
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/pnpm-lock.yaml ./
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/public ./public
 
-# Install production dependencies and set permissions in one layer
-RUN pnpm install --frozen-lockfile --production=true && \
+# Install only production dependencies
+RUN pnpm install --frozen-lockfile --prod && \
     chown -R remixjs:nodejs /app
 
 USER remixjs
